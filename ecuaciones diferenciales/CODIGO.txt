@@ -1,0 +1,74 @@
+def euler(f, t0, y0, h, n):
+    """Método de Euler"""
+    t, y = t0, y0
+    resultados = [(t, y)]
+    for i in range(n):
+        f_val = f(t, y)
+        print(f"Euler: t = {t:.2f}, y = {y:.2f}, f(t, y) = {f_val:.2f}")
+        y = y + f_val * h
+        t = t + h
+        resultados.append((t, y))
+    return resultados
+
+def heun(f, t0, y0, h, n):
+    """Método de Heun"""
+    t, y = t0, y0
+    resultados = [(t, y)]
+    for i in range(n):
+        k1 = f(t, y)
+        k2 = f(t + h, y + h * k1)
+        print(f"Heun: t = {t:.2f}, y = {y:.2f}, k1 = {k1:.2f}, k2 = {k2:.2f}")
+        y = y + h * (k1 + k2) / 2
+        t = t + h
+        resultados.append((t, y))
+    return resultados
+
+def runge_kutta_4(f, t0, y0, h, n):
+    """Método de Runge-Kutta de cuarto orden"""
+    t, y = t0, y0
+    resultados = [(t, y)]
+    for i in range(n):
+        k1 = f(t, y)
+        k2 = f(t + h / 2, y + h / 2 * k1)
+        k3 = f(t + h / 2, y + h / 2 * k2)
+        k4 = f(t + h, y + h * k3)
+        print(f"RK4: t = {t:.2f}, y = {y:.2f}, k1 = {k1:.2f}, k2 = {k2:.2f}, k3 = {k3:.2f}, k4 = {k4:.2f}")
+        y = y + h * (k1 + 2 * k2 + 2 * k3 + k4) / 6
+        t = t + h
+        resultados.append((t, y))
+    return resultados
+
+# Función de enfriamiento (f(t, T) = -k(T - T_amb))
+def cooling(t, T, k=0.07, T_amb=25):
+    return -k * (T - T_amb)
+
+# Entrada de datos
+print("Problema del enfriamiento del café")
+T0 = float(input("Temperatura inicial (°C): "))
+T_amb = float(input("Temperatura ambiente (°C): "))
+k = float(input("Constante de enfriamiento (k): "))
+t0 = 0
+h = float(input("Paso (h): "))
+t_final = float(input("Tiempo final (minutos): "))
+
+# Parámetros para los métodos
+n = int(t_final / h)
+
+# Resolver usando los tres métodos
+resultados_euler = euler(lambda t, T: cooling(t, T, k, T_amb), t0, T0, h, n)
+resultados_heun = heun(lambda t, T: cooling(t, T, k, T_amb), t0, T0, h, n)
+resultados_rk4 = runge_kutta_4(lambda t, T: cooling(t, T, k, T_amb), t0, T0, h, n)
+
+# Mostrar resultados
+print("\nResultados (tiempo, temperatura):")
+print("Método de Euler:")
+for t, T in resultados_euler:
+    print(f"t = {t:.2f}, T = {T:.2f}")
+
+print("\nMétodo de Heun:")
+for t, T in resultados_heun:
+    print(f"t = {t:.2f}, T = {T:.2f}")
+
+print("\nMétodo de Runge-Kutta 4to orden:")
+for t, T in resultados_rk4:
+    print(f"t = {t:.2f}, T = {T:.2f}")
